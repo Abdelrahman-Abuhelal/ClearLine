@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'ClearLine — AI Product Understanding Preview',
+    title: 'HowAiSees — AI Product Understanding Preview',
     description:
         'See how AI actually understands your product. Discover what AI systems interpret, where understanding breaks, and why they hesitate to recommend.',
 };

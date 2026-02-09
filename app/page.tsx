@@ -94,7 +94,7 @@ export default function LandingPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
                         </div>
-                        ClearLine
+                        HowAiSees
                     </div>
                     <a href="#try" className="nav-cta">Try Preview</a>
                 </div>
@@ -357,7 +357,7 @@ export default function LandingPage() {
             {/* Footer */}
             <footer className="landing-footer">
                 <div className="container">
-                    <p>ClearLine &mdash; AI Product Understanding Preview</p>
+                    <p>HowAiSees &mdash; AI Product Understanding Preview</p>
                 </div>
             </footer>
         </div>

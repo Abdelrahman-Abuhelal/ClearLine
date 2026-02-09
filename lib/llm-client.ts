@@ -15,7 +15,7 @@ function getOpenRouterClient(): OpenAI {
                 "HTTP-Referer": process.env.VERCEL_URL 
                     ? `https://${process.env.VERCEL_URL}` 
                     : "http://localhost:3000",
-                "X-Title": "ClearLine - AI Product Understanding Preview",
+                "X-Title": "HowAiSees - AI Product Understanding Preview",
             },
         });
     }
