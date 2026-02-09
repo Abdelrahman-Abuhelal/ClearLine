@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import LoadingState from '@/components/LoadingState';
 import RiskIndicator from '@/components/RiskIndicator';
 import IssuesList from '@/components/IssuesList';
@@ -16,14 +17,26 @@ interface DiagnosticResponse {
     riskLevel: 'Low' | 'Medium' | 'High';
 }
 
-export default function PreviewPage() {
+function PreviewContent() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [url, setUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState<DiagnosticResponse | null>(null);
+    const [autoSubmitted, setAutoSubmitted] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // Read URL from query params and auto-submit
+    useEffect(() => {
+        const urlParam = searchParams.get('url');
+        if (urlParam && !autoSubmitted) {
+            setUrl(urlParam);
+            setAutoSubmitted(true);
+            submitUrl(urlParam);
+        }
+    }, [searchParams, autoSubmitted]);
+
+    const submitUrl = async (productUrl: string) => {
         setError('');
         setResult(null);
         setLoading(true);
@@ -31,10 +44,8 @@ export default function PreviewPage() {
         try {
             const response = await fetch('/api/ai-preview', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ productUrl: url }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productUrl }),
             });
 
             const data = await response.json();
@@ -45,137 +56,277 @@ export default function PreviewPage() {
             }
 
             setResult(data);
-        } catch (err) {
+        } catch {
             setError('Failed to analyze product. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!url.trim()) return;
+        submitUrl(url.trim());
+    };
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-            <div className="max-w-4xl mx-auto px-4 py-12">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+            {/* Top bar */}
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 100,
+                    padding: '16px 0',
+                    background: 'rgba(9, 9, 11, 0.85)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    borderBottom: '1px solid var(--border-subtle)',
+                }}
+            >
+                <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <button
+                        onClick={() => router.push('/')}
+                        className="logo"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                        <div className="logo-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </div>
+                        ClearLine
+                    </button>
+                    <span
+                        style={{
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            letterSpacing: '0.08em',
+                            textTransform: 'uppercase' as const,
+                            color: 'var(--accent)',
+                            background: 'var(--accent-glow)',
+                            border: '1px solid rgba(192, 132, 252, 0.12)',
+                            padding: '4px 12px',
+                            borderRadius: '100px',
+                        }}
+                    >
+                        Diagnostic Preview
+                    </span>
+                </div>
+            </div>
+
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '100px 24px 80px' }}>
+                {/* Input Section */}
+                <div
+                    style={{
+                        background: 'var(--bg-elevated)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '16px',
+                        padding: '32px',
+                        marginBottom: '32px',
+                    }}
+                >
+                    <h1
+                        style={{
+                            fontSize: '28px',
+                            fontWeight: 700,
+                            letterSpacing: '-0.03em',
+                            marginBottom: '8px',
+                            color: 'var(--text-primary)',
+                        }}
+                    >
                         AI Product Understanding Preview
                     </h1>
-                    <p className="text-lg text-gray-600">
+                    <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
                         Discover how AI systems currently interpret your product page
                     </p>
-                </div>
 
-                {/* Input Section */}
-                <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
                     <form onSubmit={handleSubmit}>
-                        <label
-                            htmlFor="product-url"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Product URL
-                        </label>
-                        <div className="flex gap-3">
+                        <div className="url-input-wrapper" style={{ maxWidth: '100%' }}>
+                            <span className="url-prefix">URL</span>
                             <input
-                                id="product-url"
                                 type="url"
                                 value={url}
                                 onChange={(e) => setUrl(e.target.value)}
                                 placeholder="https://example.com/product-page"
-                                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                aria-label="Product page URL"
                                 required
                             />
                             <button
                                 type="submit"
+                                className="btn-primary"
                                 disabled={loading}
-                                className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                                style={loading ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                             >
-                                {loading ? 'Analyzing...' : 'Preview AI Understanding'}
+                                {loading ? 'Analyzing...' : 'Analyze'}
                             </button>
                         </div>
                     </form>
 
                     {error && (
-                        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-red-700">{error}</p>
+                        <div
+                            style={{
+                                marginTop: '16px',
+                                padding: '16px',
+                                background: 'var(--red-dim)',
+                                border: '1px solid rgba(248, 113, 113, 0.2)',
+                                borderRadius: '12px',
+                            }}
+                        >
+                            <p style={{ color: 'var(--red)', fontSize: '14px' }}>{error}</p>
                         </div>
                     )}
                 </div>
 
                 {/* Loading State */}
                 {loading && (
-                    <div className="bg-white rounded-xl shadow-lg p-8">
+                    <div
+                        style={{
+                            background: 'var(--bg-elevated)',
+                            border: '1px solid var(--border)',
+                            borderRadius: '16px',
+                            padding: '32px',
+                        }}
+                    >
                         <LoadingState />
                     </div>
                 )}
 
                 {/* Results Section */}
                 {result && !loading && (
-                    <div className="space-y-8">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         {/* Section 1: AI Understanding */}
-                        <div className="bg-white rounded-xl shadow-lg p-8">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                How AI Understands Your Product
-                            </h2>
-                            <p className="text-gray-600 text-sm mb-4">
-                                This understanding is based on what AI systems can confidently extract from the page.
+                        <div
+                            style={{
+                                background: 'var(--bg-elevated)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '16px',
+                                padding: '32px',
+                            }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                                <div
+                                    style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        borderRadius: '50%',
+                                        background: 'var(--green)',
+                                    }}
+                                ></div>
+                                <h2
+                                    style={{
+                                        fontSize: '11px',
+                                        fontWeight: 600,
+                                        letterSpacing: '0.08em',
+                                        textTransform: 'uppercase' as const,
+                                        color: 'var(--green)',
+                                    }}
+                                >
+                                    How AI Understands Your Product
+                                </h2>
+                            </div>
+                            <p style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>
+                                If an AI assistant had to recommend this product, this is how it would describe it:
                             </p>
-                            <p className="text-gray-700 leading-relaxed text-lg">
-                                {result.aiUnderstanding}
-                            </p>
+                            <div
+                                style={{
+                                    padding: '20px',
+                                    background: 'var(--bg-surface)',
+                                    borderRadius: '12px',
+                                    borderLeft: '3px solid var(--green)',
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        color: 'var(--text-secondary)',
+                                        lineHeight: 1.7,
+                                        fontSize: '15px',
+                                    }}
+                                >
+                                    {result.aiUnderstanding}
+                                </p>
+                            </div>
                         </div>
 
                         {/* Section 2: Where Understanding Breaks */}
-                        <div className="bg-white rounded-xl shadow-lg p-8">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                                Where This Understanding Breaks
-                            </h2>
+                        <div
+                            style={{
+                                background: 'var(--bg-elevated)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '16px',
+                                padding: '32px',
+                            }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+                                <div
+                                    style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        borderRadius: '50%',
+                                        background: 'var(--red)',
+                                    }}
+                                ></div>
+                                <h2
+                                    style={{
+                                        fontSize: '11px',
+                                        fontWeight: 600,
+                                        letterSpacing: '0.08em',
+                                        textTransform: 'uppercase' as const,
+                                        color: 'var(--red)',
+                                    }}
+                                >
+                                    Where This Understanding Breaks
+                                </h2>
+                            </div>
 
-                            <div className="space-y-6">
-                                <div className="mb-6">
-                                    <h4 className="font-semibold text-lg mb-1 flex items-center gap-2">
-                                        <span>❌</span>
-                                        Missing or Unavailable to AI
-                                    </h4>
-                                    <p className="text-xs text-gray-600 italic mb-3">
-                                        These details may exist on the site, but are not clearly exposed to AI systems.
-                                    </p>
-                                    {result.issues.missing.length > 0 ? (
-                                        <ul className="space-y-2">
-                                            {result.issues.missing.map((item, index) => (
-                                                <li key={index} className="flex items-start gap-2">
-                                                    <span className="text-gray-400 mt-1">•</span>
-                                                    <span className="text-gray-700">{item}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-gray-500 italic">
-                                            No major issues detected in this area.
-                                        </p>
-                                    )}
-                                </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <IssuesList
+                                    title="Missing or Unavailable to AI"
+                                    subtitle="These details may exist on the site, but are not clearly exposed to AI systems."
+                                    items={result.issues.missing}
+                                    icon="missing"
+                                />
                                 <IssuesList
                                     title="Ambiguity"
                                     items={result.issues.ambiguity}
-                                    icon="❓"
+                                    icon="ambiguity"
                                 />
                                 <IssuesList
                                     title="Conflicts"
                                     items={result.issues.conflicts}
-                                    icon="⚠️"
+                                    icon="conflicts"
                                 />
                                 <IssuesList
                                     title="Weak Signals"
                                     items={result.issues.weakSignals}
-                                    icon="📉"
+                                    icon="weak"
                                 />
                             </div>
 
                             {/* Why AI Hesitates Section */}
-                            <div className="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-6 mt-6">
-                                <h3 className="font-semibold text-gray-900 mb-3">Why AI Hesitates</h3>
-                                <p className="text-sm text-gray-700 mb-2">Possible causes (not page-specific):</p>
-                                <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                            <div
+                                style={{
+                                    marginTop: '24px',
+                                    padding: '24px',
+                                    background: 'var(--amber-dim)',
+                                    border: '1px solid rgba(251, 191, 36, 0.15)',
+                                    borderLeft: '3px solid var(--amber)',
+                                    borderRadius: '12px',
+                                }}
+                            >
+                                <h3 style={{ fontWeight: 600, color: 'var(--amber)', marginBottom: '12px', fontSize: '14px' }}>
+                                    Why AI Hesitates
+                                </h3>
+                                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                                    AI systems aggressively filter noisy pages. Only a fraction of product information survives this process — and that subset defines how your product is understood.
+                                </p>
+                                <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
+                                    Possible causes (not page-specific):
+                                </p>
+                                <ul style={{ fontSize: '12px', color: 'var(--text-tertiary)', listStyle: 'disc', paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                     <li>Product details embedded in navigation or non-semantic elements</li>
                                     <li>Missing structured data</li>
                                     <li>Overloaded pages with mixed intent content</li>
@@ -188,41 +339,116 @@ export default function PreviewPage() {
                         </div>
 
                         {/* Disclaimer */}
-                        <div className="bg-gray-50 border-l-4 border-blue-500 rounded-lg p-6">
-                            <p className="text-gray-700">
-                                <strong className="font-semibold">This is a diagnostic preview.</strong>
+                        <div
+                            style={{
+                                padding: '24px',
+                                background: 'var(--accent-glow)',
+                                border: '1px solid rgba(192, 132, 252, 0.12)',
+                                borderLeft: '3px solid var(--accent)',
+                                borderRadius: '12px',
+                            }}
+                        >
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                                <strong style={{ color: 'var(--accent)', fontWeight: 600 }}>
+                                    This is a diagnostic preview.
+                                </strong>
                                 <br />
                                 It shows how AI systems currently interpret your product — not how to optimize it.
                             </p>
                         </div>
 
+                        {/* Try another URL */}
+                        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                            <button
+                                onClick={() => {
+                                    setResult(null);
+                                    setUrl('');
+                                    setError('');
+                                    router.push('/preview');
+                                }}
+                                style={{
+                                    fontSize: '14px',
+                                    color: 'var(--text-tertiary)',
+                                    background: 'none',
+                                    border: '1px solid var(--border)',
+                                    padding: '10px 24px',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color = 'var(--text-primary)';
+                                    e.currentTarget.style.borderColor = 'var(--text-tertiary)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = 'var(--text-tertiary)';
+                                    e.currentTarget.style.borderColor = 'var(--border)';
+                                }}
+                            >
+                                Analyze another product
+                            </button>
+                        </div>
+
                         {/* Debug Section */}
-                        {(result as any)._debug && (
-                            <details className="bg-gray-100 rounded-lg p-6">
-                                <summary className="cursor-pointer font-semibold text-gray-900 hover:text-blue-600 transition-colors">
-                                    🔍 View raw extracted signals (for debugging)
+                        {(result as DiagnosticResponse & { _debug?: Record<string, unknown> })._debug && (
+                            <details
+                                style={{
+                                    background: 'var(--bg-surface)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '12px',
+                                    padding: '24px',
+                                }}
+                            >
+                                <summary
+                                    style={{
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        color: 'var(--text-secondary)',
+                                        fontSize: '14px',
+                                    }}
+                                >
+                                    View raw extracted signals (for debugging)
                                 </summary>
-                                <div className="mt-4 space-y-4">
+                                <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     <div>
-                                        <h4 className="font-semibold text-gray-800 mb-2">Extracted Signals:</h4>
-                                        <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm">
-                                            {JSON.stringify((result as any)._debug.extractedSignals, null, 2)}
+                                        <h4 style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '13px' }}>
+                                            Extracted Signals:
+                                        </h4>
+                                        <pre
+                                            style={{
+                                                background: 'var(--bg-elevated)',
+                                                padding: '16px',
+                                                borderRadius: '8px',
+                                                border: '1px solid var(--border)',
+                                                overflow: 'auto',
+                                                fontSize: '12px',
+                                                color: 'var(--text-tertiary)',
+                                                fontFamily: "'JetBrains Mono', monospace",
+                                            }}
+                                        >
+                                            {JSON.stringify((result as DiagnosticResponse & { _debug: { extractedSignals: unknown } })._debug.extractedSignals, null, 2)}
                                         </pre>
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-gray-800 mb-2">Normalized Content (Before Filtering):</h4>
-                                        <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm whitespace-pre-wrap">
-                                            {(result as any)._debug.normalizedContent}
+                                        <h4 style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '13px' }}>
+                                            Normalized Content:
+                                        </h4>
+                                        <pre
+                                            style={{
+                                                background: 'var(--bg-elevated)',
+                                                padding: '16px',
+                                                borderRadius: '8px',
+                                                border: '1px solid var(--border)',
+                                                overflow: 'auto',
+                                                fontSize: '12px',
+                                                color: 'var(--text-tertiary)',
+                                                fontFamily: "'JetBrains Mono', monospace",
+                                                whiteSpace: 'pre-wrap',
+                                            }}
+                                        >
+                                            {(result as DiagnosticResponse & { _debug: { normalizedContent: string } })._debug.normalizedContent}
                                         </pre>
                                     </div>
-                                    {(result as any)._debug.filteredContent && (
-                                        <div>
-                                            <h4 className="font-semibold text-gray-800 mb-2">Filtered Content (After AI Preprocessing):</h4>
-                                            <pre className="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm whitespace-pre-wrap">
-                                                {(result as any)._debug.filteredContent}
-                                            </pre>
-                                        </div>
-                                    )}
                                 </div>
                             </details>
                         )}
@@ -230,5 +456,21 @@ export default function PreviewPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function PreviewPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+                    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '100px 24px 80px' }}>
+                        <LoadingState />
+                    </div>
+                </div>
+            }
+        >
+            <PreviewContent />
+        </Suspense>
     );
 }

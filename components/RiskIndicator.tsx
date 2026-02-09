@@ -5,38 +5,84 @@ interface RiskIndicatorProps {
 export default function RiskIndicator({ riskLevel }: RiskIndicatorProps) {
     const config = {
         Low: {
-            emoji: '🟢',
-            color: 'text-green-600',
-            bg: 'bg-green-50',
-            border: 'border-green-200',
+            color: 'var(--green)',
+            bg: 'var(--green-dim)',
+            border: 'rgba(74, 222, 128, 0.15)',
+            behavior: 'Likely to be recommended when relevant.',
+            label: 'Low Risk',
         },
         Medium: {
-            emoji: '🟡',
-            color: 'text-yellow-600',
-            bg: 'bg-yellow-50',
-            border: 'border-yellow-200',
+            color: 'var(--amber)',
+            bg: 'var(--amber-dim)',
+            border: 'rgba(251, 191, 36, 0.15)',
+            behavior: 'May be skipped unless explicitly queried.',
+            label: 'Medium Risk',
         },
         High: {
-            emoji: '🔴',
-            color: 'text-red-600',
-            bg: 'bg-red-50',
-            border: 'border-red-200',
+            color: 'var(--red)',
+            bg: 'var(--red-dim)',
+            border: 'rgba(248, 113, 113, 0.15)',
+            behavior: 'Unlikely to be recommended.',
+            label: 'High Risk',
         },
     };
 
-    const { emoji, color, bg, border } = config[riskLevel];
+    const { color, bg, border, behavior, label } = config[riskLevel];
 
     return (
-        <div className={`${bg} ${border} border-2 rounded-lg p-6 mt-8`}>
-            <div className="flex items-center gap-3 mb-2">
-                <span className="text-3xl">{emoji}</span>
-                <h3 className={`text-xl font-semibold ${color}`}>
-                    {riskLevel} Confidence Risk
-                </h3>
+        <div
+            style={{
+                marginTop: '24px',
+                padding: '24px',
+                background: bg,
+                border: `1px solid ${border}`,
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '16px',
+            }}
+        >
+            <div
+                style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    background: bg,
+                    border: `1px solid ${border}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                }}
+            >
+                <div
+                    style={{
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: '50%',
+                        background: color,
+                    }}
+                ></div>
             </div>
-            <p className="text-gray-700 mt-2">
-                AI systems tend to favor clearer alternatives when confidence is low.
-            </p>
+            <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <h3
+                        style={{
+                            fontSize: '15px',
+                            fontWeight: 600,
+                            color: color,
+                        }}
+                    >
+                        {label} — Confidence Risk
+                    </h3>
+                </div>
+                <p style={{ color: color, fontSize: '14px', fontWeight: 500 }}>
+                    {behavior}
+                </p>
+                <p style={{ color: 'var(--text-tertiary)', fontSize: '12px', marginTop: '4px' }}>
+                    AI systems tend to favor clearer alternatives when confidence is low.
+                </p>
+            </div>
         </div>
     );
 }
