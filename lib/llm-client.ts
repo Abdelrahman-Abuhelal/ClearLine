@@ -1,13 +1,26 @@
 import OpenAI from 'openai';
 
-const openrouter = new OpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey: process.env.OPENROUTER_API_KEY,
-    defaultHeaders: {
-        "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "AI Product Understanding Preview",
-    },
-});
+// Lazy initialization to avoid build-time errors when env vars aren't available
+let openrouterClient: OpenAI | null = null;
+
+function getOpenRouterClient(): OpenAI {
+    if (!openrouterClient) {
+        if (!process.env.OPENROUTER_API_KEY) {
+            throw new Error('OPENROUTER_API_KEY environment variable is not set');
+        }
+        openrouterClient = new OpenAI({
+            baseURL: 'https://openrouter.ai/api/v1',
+            apiKey: process.env.OPENROUTER_API_KEY,
+            defaultHeaders: {
+                "HTTP-Referer": process.env.VERCEL_URL 
+                    ? `https://${process.env.VERCEL_URL}` 
+                    : "http://localhost:3000",
+                "X-Title": "ClearLine - AI Product Understanding Preview",
+            },
+        });
+    }
+    return openrouterClient;
+}
 
 export interface DiagnosticResponse {
     aiUnderstanding: string;
@@ -78,7 +91,7 @@ ${rawContent}`;
 
     try {
         console.log('Filtering product signals from raw content...');
-        const completion = await openrouter.chat.completions.create({
+        const completion = await getOpenRouterClient().chat.completions.create({
             model: 'google/gemma-3-12b-it:free',
             messages: [
                 {
@@ -109,7 +122,7 @@ export async function analyzeProductContent(
 ): Promise<DiagnosticResponse> {
     try {
         console.log('Sending request to OpenRouter with model: google/gemma-3-12b-it:free');
-        const completion = await openrouter.chat.completions.create({
+        const completion = await getOpenRouterClient().chat.completions.create({
             model: 'google/gemma-3-12b-it:free',
             messages: [
                 {
