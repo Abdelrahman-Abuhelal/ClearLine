@@ -28,7 +28,7 @@ export default function LoadingState() {
                     color: 'var(--text-secondary)',
                 }}
             >
-                Analyzing how AI understands this product...
+                Previewing your AI sales agent...
             </p>
             <div
                 style={{
@@ -48,7 +48,7 @@ export default function LoadingState() {
                     }}
                 ></div>
                 <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
-                    Extracting signals, filtering noise, running diagnosis
+                    Learning your product, building recommendations, checking readiness
                 </span>
             </div>
         </div>

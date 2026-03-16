@@ -8,22 +8,22 @@ export default function RiskIndicator({ riskLevel }: RiskIndicatorProps) {
             color: 'var(--green)',
             bg: 'var(--green-dim)',
             border: 'rgba(74, 222, 128, 0.15)',
-            behavior: 'Likely to be recommended when relevant.',
-            label: 'Low Risk',
+            behavior: 'Your AI sales agent can confidently recommend this product.',
+            label: 'Strong',
         },
         Medium: {
             color: 'var(--amber)',
             bg: 'var(--amber-dim)',
             border: 'rgba(251, 191, 36, 0.15)',
-            behavior: 'May be skipped unless explicitly queried.',
-            label: 'Medium Risk',
+            behavior: 'Shoppers may need to ask follow-up questions to get the right recommendation.',
+            label: 'Moderate',
         },
         High: {
             color: 'var(--red)',
             bg: 'var(--red-dim)',
             border: 'rgba(248, 113, 113, 0.15)',
-            behavior: 'Unlikely to be recommended.',
-            label: 'High Risk',
+            behavior: 'This product is unlikely to surface in recommendations without improvements.',
+            label: 'Needs Improvement',
         },
     };
 
@@ -73,14 +73,14 @@ export default function RiskIndicator({ riskLevel }: RiskIndicatorProps) {
                             color: color,
                         }}
                     >
-                        {label} — Confidence Risk
+                        {label} — AI Sales Readiness
                     </h3>
                 </div>
                 <p style={{ color: color, fontSize: '14px', fontWeight: 500 }}>
                     {behavior}
                 </p>
                 <p style={{ color: 'var(--text-tertiary)', fontSize: '12px', marginTop: '4px' }}>
-                    AI systems tend to favor clearer alternatives when confidence is low.
+                    Products with stronger signals get recommended more often to shoppers.
                 </p>
             </div>
         </div>

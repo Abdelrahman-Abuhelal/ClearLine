@@ -113,7 +113,7 @@ function PreviewContent() {
                             borderRadius: '100px',
                         }}
                     >
-                        Diagnostic Preview
+                        AI Sales Agent Preview
                     </span>
                 </div>
             </div>
@@ -138,10 +138,10 @@ function PreviewContent() {
                             color: 'var(--text-primary)',
                         }}
                     >
-                        AI Product Understanding Preview
+                        See How Your AI Sales Agent Would Sell This Product
                     </h1>
                     <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                        Discover how AI systems currently interpret your product page
+                        Paste a product URL to preview how HowAiSees understands, recommends, and surfaces it to shoppers
                     </p>
 
                     <form onSubmit={handleSubmit}>
@@ -161,7 +161,7 @@ function PreviewContent() {
                                 disabled={loading}
                                 style={loading ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                             >
-                                {loading ? 'Analyzing...' : 'Analyze'}
+                                {loading ? 'Previewing...' : 'Preview'}
                             </button>
                         </div>
                     </form>
@@ -225,11 +225,11 @@ function PreviewContent() {
                                         color: 'var(--green)',
                                     }}
                                 >
-                                    How AI Understands Your Product
+                                    How Your AI Sales Agent Would Present This Product
                                 </h2>
                             </div>
                             <p style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>
-                                If an AI assistant had to recommend this product, this is how it would describe it:
+                                When a shopper asks about this product, your AI sales agent would describe it like this:
                             </p>
                             <div
                                 style={{
@@ -278,35 +278,34 @@ function PreviewContent() {
                                         color: 'var(--red)',
                                     }}
                                 >
-                                    Where This Understanding Breaks
+                                    What May Block Product Discovery
                                 </h2>
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                 <IssuesList
-                                    title="Missing or Unavailable to AI"
-                                    subtitle="These details may exist on the site, but are not clearly exposed to AI systems."
+                                    title="Missing Product Signals"
+                                    subtitle="Key details shoppers ask about that aren't clearly available to your AI sales agent."
                                     items={result.issues.missing}
                                     icon="missing"
                                 />
                                 <IssuesList
-                                    title="Ambiguity"
+                                    title="Unclear Shopper Value"
                                     items={result.issues.ambiguity}
                                     icon="ambiguity"
                                 />
                                 <IssuesList
-                                    title="Conflicts"
+                                    title="Conflicting Information"
                                     items={result.issues.conflicts}
                                     icon="conflicts"
                                 />
                                 <IssuesList
-                                    title="Weak Signals"
+                                    title="Weak Discovery Signals"
                                     items={result.issues.weakSignals}
                                     icon="weak"
                                 />
                             </div>
 
-                            {/* Why AI Hesitates Section */}
                             <div
                                 style={{
                                     marginTop: '24px',
@@ -318,27 +317,26 @@ function PreviewContent() {
                                 }}
                             >
                                 <h3 style={{ fontWeight: 600, color: 'var(--amber)', marginBottom: '12px', fontSize: '14px' }}>
-                                    Why AI Hesitates
+                                    What Blocks Product Discovery
                                 </h3>
                                 <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                                    AI systems aggressively filter noisy pages. Only a fraction of product information survives this process — and that subset defines how your product is understood.
+                                    Your AI sales agent builds recommendations from the signals on your product page. When key details are missing or unclear, shoppers get weaker answers — or no recommendation at all.
                                 </p>
                                 <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
-                                    Possible causes (not page-specific):
+                                    Common blockers:
                                 </p>
                                 <ul style={{ fontSize: '12px', color: 'var(--text-tertiary)', listStyle: 'disc', paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                    <li>Product details embedded in navigation or non-semantic elements</li>
-                                    <li>Missing structured data</li>
-                                    <li>Overloaded pages with mixed intent content</li>
-                                    <li>JavaScript-rendered specs</li>
-                                    <li>Inconsistent terminology across sections</li>
+                                    <li>Important specs hidden behind tabs or JavaScript rendering</li>
+                                    <li>Missing structured data (price, availability, ratings)</li>
+                                    <li>Vague or generic product descriptions</li>
+                                    <li>No clear differentiators vs. similar products</li>
+                                    <li>Inconsistent naming across product details</li>
                                 </ul>
                             </div>
 
                             <RiskIndicator riskLevel={result.riskLevel} />
                         </div>
 
-                        {/* Disclaimer */}
                         <div
                             style={{
                                 padding: '24px',
@@ -350,15 +348,29 @@ function PreviewContent() {
                         >
                             <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
                                 <strong style={{ color: 'var(--accent)', fontWeight: 600 }}>
-                                    This is a diagnostic preview.
+                                    This is a preview of your AI sales agent.
                                 </strong>
                                 <br />
-                                It shows how AI systems currently interpret your product — not how to optimize it.
+                                It shows how HowAiSees can understand your products, guide shoppers to the right choice, and surface demand insights for your store.
                             </p>
                         </div>
 
-                        {/* Try another URL */}
-                        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                        {/* Next actions */}
+                        <div style={{ textAlign: 'center', padding: '20px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                            <button
+                                onClick={() => {
+                                    window.open('https://howaisees.com', '_blank');
+                                }}
+                                className="btn-primary"
+                                style={{
+                                    fontSize: '14px',
+                                    padding: '12px 28px',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Create Your AI Sales Agent
+                            </button>
                             <button
                                 onClick={() => {
                                     setResult(null);
@@ -385,7 +397,7 @@ function PreviewContent() {
                                     e.currentTarget.style.borderColor = 'var(--border)';
                                 }}
                             >
-                                Analyze another product
+                                Preview another product
                             </button>
                         </div>
 

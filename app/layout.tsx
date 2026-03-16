@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'HowAiSees — AI Product Understanding Preview',
+    title: 'HowAiSees — AI Sales Agent for E-Commerce',
     description:
-        'See how AI actually understands your product. Discover what AI systems interpret, where understanding breaks, and why they hesitate to recommend.',
+        'Create your AI sales agent in 2 minutes. Help shoppers discover products, get instant recommendations, and turn conversations into demand insights.',
 };
 
 export default function RootLayout({

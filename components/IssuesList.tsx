@@ -72,7 +72,7 @@ export default function IssuesList({ title, subtitle, items, icon }: IssuesListP
                 </div>
             ) : (
                 <p style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontStyle: 'italic', paddingLeft: '34px' }}>
-                    No major issues detected in this area.
+                    Looking good — no blockers found here.
                 </p>
             )}
         </div>
