@@ -9,7 +9,7 @@ export default function IssuesList({ title, subtitle, items, icon }: IssuesListP
     const iconConfig: Record<string, { color: string; bg: string; symbol: string }> = {
         missing: { color: 'var(--red)', bg: 'var(--red-dim)', symbol: '\u2715' },
         ambiguity: { color: 'var(--amber)', bg: 'var(--amber-dim)', symbol: '?' },
-        conflicts: { color: '#f97316', bg: 'rgba(249, 115, 22, 0.1)', symbol: '!' },
+        conflicts: { color: '#ea580c', bg: 'rgba(234, 88, 12, 0.08)', symbol: '!' },
         weak: { color: 'var(--blue)', bg: 'var(--blue-dim)', symbol: '\u2193' },
     };
 

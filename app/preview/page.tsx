@@ -80,7 +80,7 @@ function PreviewContent() {
                     right: 0,
                     zIndex: 100,
                     padding: '16px 0',
-                    background: 'rgba(9, 9, 11, 0.85)',
+                    background: 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
                     borderBottom: '1px solid var(--border-subtle)',
