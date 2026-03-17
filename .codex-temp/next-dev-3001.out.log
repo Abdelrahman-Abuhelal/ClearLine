@@ -1,0 +1,14 @@
+
+> how-ai-sees@0.1.0 dev
+> next dev --hostname 127.0.0.1 --port 3001
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://127.0.0.1:3001
+- Network:       http://127.0.0.1:3001
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 1305ms
+ GET / 200 in 39ms (compile: 4ms, render: 35ms)
+Terminate batch job (Y/N)? 
+[?25h

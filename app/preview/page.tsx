@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import LoadingState from '@/components/LoadingState';
@@ -26,7 +27,6 @@ function PreviewContent() {
     const [result, setResult] = useState<DiagnosticResponse | null>(null);
     const [autoSubmitted, setAutoSubmitted] = useState(false);
 
-    // Read URL from query params and auto-submit
     useEffect(() => {
         const urlParam = searchParams.get('url');
         if (urlParam && !autoSubmitted) {
@@ -71,7 +71,6 @@ function PreviewContent() {
 
     return (
         <div className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-            {/* Top bar */}
             <div
                 style={{
                     position: 'fixed',
@@ -92,13 +91,14 @@ function PreviewContent() {
                         className="logo"
                         style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                     >
-                        <div className="logo-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                        </div>
-                        HowAiSees
+                        <Image
+                            src="/HowAISees-logo.png"
+                            alt="HowAISees logo"
+                            width={224}
+                            height={134}
+                            className="brand-logo-image"
+                            priority
+                        />
                     </button>
                     <span
                         style={{
@@ -106,20 +106,19 @@ function PreviewContent() {
                             fontWeight: 500,
                             letterSpacing: '0.08em',
                             textTransform: 'uppercase' as const,
-                            color: 'var(--accent)',
+                            color: 'var(--accent-deep)',
                             background: 'var(--accent-glow)',
-                            border: '1px solid rgba(192, 132, 252, 0.12)',
+                            border: '1px solid rgba(45, 201, 199, 0.26)',
                             padding: '4px 12px',
                             borderRadius: '100px',
                         }}
                     >
-                        AI Sales Agent Preview
+                        AI Salesperson Preview
                     </span>
                 </div>
             </div>
 
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '100px 24px 80px' }}>
-                {/* Input Section */}
                 <div
                     style={{
                         background: 'var(--bg-elevated)',
@@ -138,10 +137,10 @@ function PreviewContent() {
                             color: 'var(--text-primary)',
                         }}
                     >
-                        See How Your AI Sales Agent Would Sell This Product
+                        See How Your AI Salesperson Agent Would Sell This Product
                     </h1>
                     <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                        Paste a product URL to preview how HowAiSees understands, recommends, and surfaces it to shoppers
+                        Paste a product URL to preview recommendations and Revenue Signals for conversion and AI-search discoverability.
                     </p>
 
                     <form onSubmit={handleSubmit}>
@@ -181,7 +180,6 @@ function PreviewContent() {
                     )}
                 </div>
 
-                {/* Loading State */}
                 {loading && (
                     <div
                         style={{
@@ -195,10 +193,8 @@ function PreviewContent() {
                     </div>
                 )}
 
-                {/* Results Section */}
                 {result && !loading && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                        {/* Section 1: AI Understanding */}
                         <div
                             style={{
                                 background: 'var(--bg-elevated)',
@@ -225,11 +221,11 @@ function PreviewContent() {
                                         color: 'var(--green)',
                                     }}
                                 >
-                                    How Your AI Sales Agent Would Present This Product
+                                    How Your AI Salesperson Agent Would Present This Product
                                 </h2>
                             </div>
                             <p style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginBottom: '12px' }}>
-                                When a shopper asks about this product, your AI sales agent would describe it like this:
+                                When a shopper asks about this product, your AI Salesperson Agent would describe and position it like this:
                             </p>
                             <div
                                 style={{
@@ -251,7 +247,6 @@ function PreviewContent() {
                             </div>
                         </div>
 
-                        {/* Section 2: Where Understanding Breaks */}
                         <div
                             style={{
                                 background: 'var(--bg-elevated)',
@@ -278,14 +273,14 @@ function PreviewContent() {
                                         color: 'var(--red)',
                                     }}
                                 >
-                                    What May Block Product Discovery
+                                    What May Block Product Discovery and Revenue Signals
                                 </h2>
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                 <IssuesList
                                     title="Missing Product Signals"
-                                    subtitle="Key details shoppers ask about that aren't clearly available to your AI sales agent."
+                                    subtitle="Key details shoppers ask about that are not clearly available to your AI Salesperson Agent."
                                     items={result.issues.missing}
                                     icon="missing"
                                 />
@@ -317,10 +312,10 @@ function PreviewContent() {
                                 }}
                             >
                                 <h3 style={{ fontWeight: 600, color: 'var(--amber)', marginBottom: '12px', fontSize: '14px' }}>
-                                    What Blocks Product Discovery
+                                    What Blocks Revenue from Discovery
                                 </h3>
                                 <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                                    Your AI sales agent builds recommendations from the signals on your product page. When key details are missing or unclear, shoppers get weaker answers — or no recommendation at all.
+                                    Your AI Salesperson Agent builds recommendations from product-page signals. When key details are missing or unclear, shoppers get weaker answers and teams lose valuable Revenue Signals.
                                 </p>
                                 <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
                                     Common blockers:
@@ -341,21 +336,20 @@ function PreviewContent() {
                             style={{
                                 padding: '24px',
                                 background: 'var(--accent-glow)',
-                                border: '1px solid rgba(192, 132, 252, 0.12)',
+                                border: '1px solid rgba(45, 201, 199, 0.26)',
                                 borderLeft: '3px solid var(--accent)',
                                 borderRadius: '12px',
                             }}
                         >
                             <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
                                 <strong style={{ color: 'var(--accent)', fontWeight: 600 }}>
-                                    This is a preview of your AI sales agent.
+                                    This is a preview of your AI Salesperson Agent and Revenue Signals engine.
                                 </strong>
                                 <br />
-                                It shows how HowAiSees can understand your products, guide shoppers to the right choice, and surface demand insights for your store.
+                                It shows how HowAISees can guide product discovery, improve conversion readiness, and surface demand intelligence for campaign and AI-search optimization.
                             </p>
                         </div>
 
-                        {/* Next actions */}
                         <div style={{ textAlign: 'center', padding: '20px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                             <button
                                 onClick={() => {
@@ -369,7 +363,7 @@ function PreviewContent() {
                                     cursor: 'pointer',
                                 }}
                             >
-                                Create Your AI Sales Agent
+                                Create Your AI Salesperson Agent
                             </button>
                             <button
                                 onClick={() => {
@@ -401,7 +395,6 @@ function PreviewContent() {
                             </button>
                         </div>
 
-                        {/* Debug Section */}
                         {(result as DiagnosticResponse & { _debug?: Record<string, unknown> })._debug && (
                             <details
                                 style={{
