@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'HowAiSees — AI Sales Agent for E-Commerce',
+    title: 'HowAiSees - AI Sales Funnel Platform',
     description:
-        'Create your AI sales agent in 2 minutes. Help shoppers discover products, get instant recommendations, and turn conversations into demand insights.',
+        'Turn products into AI sales funnels. Create AI-powered sales experiences, share links anywhere, and track what converts.',
 };
 
 export default function RootLayout({
