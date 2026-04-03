@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'HowAiSees - AI Sales Funnel Platform',
+    title: 'HowAISees - AI-powered Sales for Online Stores',
     description:
-        'Turn products into AI sales funnels. Create AI-powered sales experiences, share links anywhere, and track what converts.',
+        'Turn your store into an AI-powered salesperson. Help visitors choose the right product, increase conversions, and grow revenue.',
 };
 
 export default function RootLayout({
